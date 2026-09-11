@@ -1,0 +1,19 @@
+# Dépendances
+node_modules/
+target/
+
+# Build frontend
+frontend/dist/
+
+# Environnement (ne jamais committer de vrai .env)
+.env
+!.env.example
+
+# IDE / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+
+# Logs
+*.log
