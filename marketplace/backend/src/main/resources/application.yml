@@ -9,8 +9,12 @@ spring:
     hibernate:
       ddl-auto: validate
     open-in-view: false
+    properties:
+      hibernate:
+        default_schema: app_schema
   flyway:
     enabled: true
+    schemas: app_schema
     locations: classpath:db/migration
 
 springdoc:
