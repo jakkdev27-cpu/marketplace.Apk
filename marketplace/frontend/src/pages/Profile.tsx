@@ -14,12 +14,12 @@ const Profile: React.FC = () => {
     queryFn: getProfile,
   });
 
-  const { data: followers = [], isPending: followersPending } = useQuery({
+  const { data: followers = [] } = useQuery({
     queryKey: ['followers'],
     queryFn: getFollowers,
   });
 
-  const { data: following = [], isPending: followingPending } = useQuery({
+  const { data: following = [] } = useQuery({
     queryKey: ['following'],
     queryFn: getFollowing,
   });

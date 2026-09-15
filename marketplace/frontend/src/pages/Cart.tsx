@@ -38,7 +38,7 @@ export default function Cart() {
   });
 
   const items = cart.data?.items ?? [];
-  const byShop = items.reduce<Record<string, CartItem[]>>((acc, item) => {
+  const byShop = items.reduce<Record<string, CartItem[]>>((acc: Record<string, CartItem[]>, item: CartItem) => {
     (acc[item.shopId] = acc[item.shopId] ?? []).push(item);
     return acc;
   }, {});
@@ -59,7 +59,7 @@ export default function Cart() {
             <div key={shopId} className="card bg-base-100 shadow">
               <div className="card-body">
                 <h2 className="card-title">{shopItems[0].shopName}</h2>
-                {shopItems.map((item) => (
+                {(shopItems as CartItem[]).map((item: CartItem) => (
                   <div key={item.itemId} className="flex items-center gap-4 border-b last:border-0 py-3">
                     <img src={item.image ?? 'https://picsum.photos/seed/placeholder/200/200'} alt={item.name} className="w-16 h-16 rounded object-cover" />
                     <div className="flex-1">
@@ -78,7 +78,7 @@ export default function Cart() {
                   </div>
                 ))}
                 <p className="text-right font-semibold">
-                  Sous-total : {formatPrice(shopItems.reduce((s, i) => s + i.priceMinor * i.quantity, 0), shopItems[0].currency)}
+                  Sous-total : {formatPrice((shopItems as CartItem[]).reduce((s: number, i: CartItem) => s + i.priceMinor * i.quantity, 0), (shopItems as CartItem[])[0].currency)}
                 </p>
               </div>
             </div>
@@ -89,7 +89,7 @@ export default function Cart() {
               <p className="text-xl font-bold">Total : {formatPrice(cart.data?.totalMinor ?? 0, cart.data?.currency ?? 'XOF')}</p>
               <button className="btn btn-primary btn-lg" onClick={() => checkout.mutate()} disabled={checkout.isPending}>
                 {checkout.isPending ? 'Traitement…' : 'Commander (paiement à la livraison)'}
-              }
+              </button>
             </div>
           </div>
         </div>

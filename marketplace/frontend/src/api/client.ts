@@ -106,3 +106,4 @@ export const deleteNotification = notificationAPI.deleteNotification;
 export const markAllNotificationsAsRead = notificationAPI.markAllAsRead;
 export const listProducts = productAPI.list;
 export const getProduct = productAPI.get;
+export default api;
