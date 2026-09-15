@@ -21,6 +21,7 @@ import com.marketplace.repository.PaymentRepository;
 import com.marketplace.repository.ProductRepository;
 import com.marketplace.repository.PurchaseOrderRepository;
 import com.marketplace.repository.SellerOrderRepository;
+import com.marketplace.entity.SellerOrder;
 import com.marketplace.repository.UserRepository;
 import com.marketplace.security.CurrentUser;
 import com.marketplace.service.NotificationService;

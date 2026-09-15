@@ -89,7 +89,7 @@ export default function Cart() {
               <p className="text-xl font-bold">Total : {formatPrice(cart.data?.totalMinor ?? 0, cart.data?.currency ?? 'XOF')}</p>
               <button className="btn btn-primary btn-lg" onClick={() => checkout.mutate()} disabled={checkout.isPending}>
                 {checkout.isPending ? 'Traitement…' : 'Commander (paiement à la livraison)'}
-              </button>
+              }
             </div>
           </div>
         </div>

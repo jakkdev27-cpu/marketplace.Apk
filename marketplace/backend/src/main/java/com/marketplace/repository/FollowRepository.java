@@ -1,18 +1,18 @@
 package com.marketplace.repository;
 
 import com.marketplace.entity.Follow;
+import com.marketplace.entity.Follow.FollowId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
-public interface FollowRepository extends JpaRepository<Follow, UUID> {
+public interface FollowRepository extends JpaRepository<Follow, FollowId> {
 
-    List<Follow> findByFollowerId(UUID followerId);
+    List<Follow> findByIdFollowerId(UUID followerId);
 
-    List<Follow> findByFollowedId(UUID followedId);
+    List<Follow> findByIdFollowedId(UUID followedId);
 
-    Optional<Follow> findByFollowerIdAndFollowedId(UUID followerId, UUID followedId);
+    Optional<Follow> findByIdFollowerIdAndIdFollowedId(UUID followerId, UUID followedId);
 
-    void deleteByFollowerIdAndFollowedId(UUID followerId, UUID followedId);
+    void deleteByIdFollowerIdAndIdFollowedId(UUID followerId, UUID followedId);
 }

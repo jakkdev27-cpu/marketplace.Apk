@@ -38,7 +38,7 @@ public class NotificationService {
     public void markAsRead(UUID notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new IllegalArgumentException("Notification not found"));
-        notification.setIsRead(true);
+        notification.setRead(true);
         notificationRepository.save(notification);
     }
 

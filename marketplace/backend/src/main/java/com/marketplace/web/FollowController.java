@@ -1,6 +1,7 @@
 package com.marketplace.web;
 
 import com.marketplace.entity.User;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import com.marketplace.service.FollowService;
 import com.marketplace.security.CurrentUser;
 import lombok.RequiredArgsConstructor;
@@ -23,19 +24,19 @@ public class FollowController {
 
     @PostMapping("/{followedId}")
     public ResponseEntity<Void> follow(@PathVariable UUID followedId, @AuthenticationPrincipal CurrentUser currentUser) {
-        followService.follow(currentUser.getId(), followedId);
+        followService.follow(currentUser.id(), followedId);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{followedId}")
     public ResponseEntity<Void> unfollow(@PathVariable UUID followedId, @AuthenticationPrincipal CurrentUser currentUser) {
-        followService.unfollow(currentUser.getId(), followedId);
+        followService.unfollow(currentUser.id(), followedId);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/followers")
     public ResponseEntity<List<UserDTO>> getFollowers(@AuthenticationPrincipal CurrentUser currentUser) {
-        List<User> followers = followService.getFollowers(currentUser.getId());
+        List<User> followers = followService.getFollowers(currentUser.id());
         List<UserDTO> followerDTOs = followers.stream()
                 .map(u -> new UserDTO(u.getId(), u.getFirstName(), u.getLastName()))
                 .collect(Collectors.toList());
@@ -44,7 +45,7 @@ public class FollowController {
 
     @GetMapping("/following")
     public ResponseEntity<List<UserDTO>> getFollowing(@AuthenticationPrincipal CurrentUser currentUser) {
-        List<User> following = followService.getFollowing(currentUser.getId());
+        List<User> following = followService.getFollowing(currentUser.id());
         List<UserDTO> followingDTOs = following.stream()
                 .map(u -> new UserDTO(u.getId(), u.getFirstName(), u.getLastName()))
                 .collect(Collectors.toList());

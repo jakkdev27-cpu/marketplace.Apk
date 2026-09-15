@@ -1,6 +1,7 @@
 package com.marketplace.web;
 
 import com.marketplace.entity.Notification;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import com.marketplace.service.NotificationService;
 import com.marketplace.security.CurrentUser;
 import lombok.RequiredArgsConstructor;
@@ -32,13 +33,13 @@ public class NotificationController {
 
     @GetMapping
     public ResponseEntity<Page<NotificationResponse>> getNotifications(@AuthenticationPrincipal CurrentUser currentUser, Pageable pageable) {
-        Page<Notification> notifications = notificationService.getNotifications(currentUser.getId(), pageable);
+        Page<Notification> notifications = notificationService.getNotifications(currentUser.id(), pageable);
         Page<NotificationResponse> response = notifications.map(n -> new NotificationResponse(
                 n.getId(),
                 n.getUserId(),
                 n.getType(),
                 n.getMessage(),
-                n.isIsRead(),
+                n.isRead(),
                 n.getRelatedEntityType(),
                 n.getRelatedEntityId(),
                 n.getCreatedAt()
@@ -48,13 +49,13 @@ public class NotificationController {
 
     @GetMapping("/unread")
     public ResponseEntity<Page<NotificationResponse>> getUnreadNotifications(@AuthenticationPrincipal CurrentUser currentUser, Pageable pageable) {
-        Page<Notification> notifications = notificationService.getUnreadNotifications(currentUser.getId(), pageable);
+        Page<Notification> notifications = notificationService.getUnreadNotifications(currentUser.id(), pageable);
         Page<NotificationResponse> response = notifications.map(n -> new NotificationResponse(
                 n.getId(),
                 n.getUserId(),
                 n.getType(),
                 n.getMessage(),
-                n.isIsRead(),
+                n.isRead(),
                 n.getRelatedEntityType(),
                 n.getRelatedEntityId(),
                 n.getCreatedAt()
@@ -64,7 +65,7 @@ public class NotificationController {
 
     @GetMapping("/unread-count")
     public ResponseEntity<Long> getUnreadCount(@AuthenticationPrincipal CurrentUser currentUser) {
-        long count = notificationService.getUnreadCount(currentUser.getId());
+        long count = notificationService.getUnreadCount(currentUser.id());
         return ResponseEntity.ok(count);
     }
 
