@@ -1,86 +1,126 @@
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { getProduct } from '../api/client';
+import { follow, unfollow, getFollowing } from '../api/client';
 import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import api from '../api/client';
-import { useAuth } from '../auth/AuthContext';
-import { errorMessage, formatPrice } from '../utils/format';
-import type { Product } from '../types';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { BellPlus, Bell } from 'lucide-react';
 
-export default function ProductDetail() {
+const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { user } = useAuth();
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [quantity, setQuantity] = useState(1);
+  const navigate = useNavigate();
 
-  const product = useQuery({
+  const { data: product, isPending: productPending, error: productError } = useQuery({
     queryKey: ['product', id],
-    queryFn: async () => (await api.get<Product>(`/products/${id}`)).data,
-    enabled: Boolean(id),
+    queryFn: () => getProduct(id),
+    enabled: !!id,
   });
 
-  const addToCart = useMutation({
-    mutationFn: async () => api.post('/cart/items', { productId: id, quantity }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart'] });
-      navigate('/cart');
-    },
+  const { data: followings = [], isPending: followingPending } = useQuery({
+    queryKey: ['followings'],
+    queryFn: () => getFollowing(),
   });
 
-  if (product.isLoading) return <div className="text-center py-20">Chargement…</div>;
-  if (product.isError || !product.data) return <div className="text-center py-20">Produit introuvable.</div>;
+  const isPending = productPending || followingPending;
+  // Assuming followings is an array of user objects with an 'id' field
+  const isFollowing = followings.some((f) => f.id === product.shopId);
 
-  const p = product.data;
-  const image = p.images[0] ?? 'https://picsum.photos/seed/placeholder/800/800';
-
-  const handleAdd = () => {
-    if (!user) {
-      navigate('/login', { state: { from: { pathname: `/products/${id}` } } });
-      return;
+  const handleFollow = async () => {
+    if (!product) return;
+    try {
+      if (isFollowing) {
+        await unfollow(product.shopId);
+      } else {
+        await follow(product.shopId);
+      }
+      // Refetch followings to update state
+      await queryClient.invalidateQueries({ queryKey: ['followings'] });
+    } catch (err) {
+      console.error('Error toggling follow:', err);
     }
-    addToCart.mutate();
   };
 
+  if (isPending) {
+    return <div className="text-center py-12">Loading...</div>;
+  }
+
+  if (productError || !product) {
+    return (
+      <div className="text-center py-12">
+        {productError ? (
+          <p className="text-red-500">Error loading product: {productError.message}</p>
+        ) : (
+          <p>Product not found</p>
+        )}
+        <Link to="/" className="mt-4 inline-block text-blue-500 hover:underline">
+          Retour à l'accueil
+        </Link>
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8">
-      <div className="grid md:grid-cols-2 gap-8">
-        <img src={image} alt={p.name} className="w-full rounded-box shadow-lg object-cover" />
-        <div>
-          <p className="text-sm opacity-70">{p.categoryName ?? 'Sans catégorie'} · {p.shopName}</p>
-          <h1 className="text-3xl font-bold mt-1">{p.name}</h1>
-          {p.reference && <p className="text-sm opacity-60 mt-1">Réf : {p.reference}</p>}
-          <div className="mt-4 flex items-baseline gap-3">
-            <span className="text-3xl font-bold text-primary">{formatPrice(p.priceMinor, p.currency)}</span>
-            {p.oldPriceMinor != null && p.oldPriceMinor > p.priceMinor && (
-              <span className="text-xl line-through opacity-60">{formatPrice(p.oldPriceMinor, p.currency)}</span>
-            )}
+    <div className="py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col lg:flex-row">
+          <div class="w-full lg:w-1/2">
+            <img
+              src={product.images?.[0] || '/placeholder.png'}
+              alt={product.name}
+              className="w-full h-96 object-cover rounded-lg"
+            />
           </div>
-          <p className="mt-2">
-            {p.stock > 0
-              ? <span className="badge badge-success">{p.stock} en stock</span>
-              : <span className="badge badge-neutral">Rupture de stock</span>}
-          </p>
-          {p.description && <p className="mt-4 whitespace-pre-line">{p.description}</p>}
-
-          {addToCart.isError && <div className="alert alert-error text-sm mt-4">{errorMessage(addToCart.error)}</div>}
-
-          {p.stock > 0 && (
-            <div className="mt-6 flex items-center gap-3">
-              <input
-                type="number"
-                min={1}
-                max={p.stock}
-                value={quantity}
-                onChange={(e) => setQuantity(Math.max(1, Math.min(p.stock, Number(e.target.value))))}
-                className="input input-bordered w-24"
-              />
-              <button className="btn btn-primary" onClick={handleAdd} disabled={addToCart.isPending}>
-                {addToCart.isPending ? 'Ajout…' : 'Ajouter au panier'}
+          <div class="w-full lg:w-1/2 lg:pl-8 pt-4 lg:pt-0">
+            <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
+            <div className="mb-4">
+              <span className="text-blue-600">{product.shopName}</span>
+            </div>
+            <p className="text-gray-600 mb-6 line-clamp-4">{product.description}</p>
+            <div className="flex items-baseline mb-6">
+              <span className="text-2xl font-bold mr-2">
+                {product.priceMinor / 100} {product.currency}
+              </span>
+              {product.oldPriceMinor ? (
+                <span className="text-lg line-through text-gray-400 ml-2">
+                  {product.oldPriceMinor / 100} {product.currency}
+                </span>
+              ) : null}
+            </div>
+            <div className="mb-4">
+              <span className="text-sm text-gray-500">
+                Stock: {product.stock} disponible(s)
+              </span>
+            </div>
+            <div className="mb-6">
+              <button
+                onClick={handleFollow}
+                className={`w-full flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors ${
+                  isFollowing
+                    ? 'bg-red-100 text-red-600 hover:bg-red-200'
+                    : 'bg-blue-100 text-blue-600 hover:bg-blue-200'
+                }`}
+              >
+                {isFollowing ? (
+                  <>
+                    <Bell className="mr-2 h-5 w-5" />
+                    Ne plus suivre
+                  </>
+                ) : (
+                  <>
+                    <BellPlus className="mr-2 h-5 w-5" />
+                    Suivre le vendeur
+                  </>
+                )}
               </button>
             </div>
-          )}
+            <Link to="/" className="inline-flex items-center text-sm text-blue-500 hover:underline">
+              ← Retour à la liste
+            </Link>
+          </div>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default ProductDetail;

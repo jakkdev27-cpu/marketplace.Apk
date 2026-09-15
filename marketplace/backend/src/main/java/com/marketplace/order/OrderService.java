@@ -12,7 +12,6 @@ import com.marketplace.entity.Product;
 import com.marketplace.entity.ProductStatus;
 import com.marketplace.entity.PurchaseOrder;
 import com.marketplace.entity.Role;
-import com.marketplace.entity.SellerOrder;
 import com.marketplace.entity.Shop;
 import com.marketplace.exception.ApiException;
 import com.marketplace.repository.CartItemRepository;
@@ -24,10 +23,13 @@ import com.marketplace.repository.PurchaseOrderRepository;
 import com.marketplace.repository.SellerOrderRepository;
 import com.marketplace.repository.UserRepository;
 import com.marketplace.security.CurrentUser;
+import com.marketplace.service.NotificationService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,6 +53,7 @@ public class OrderService {
     private final OrderStatusHistoryRepository historyRepository;
     private final UserRepository userRepository;
     private final AuditService auditService;
+    private final NotificationService notificationService;
 
     /**
      * Transforme le panier multivendeur en commande globale + sous-commandes par vendeur.
@@ -121,9 +124,6 @@ public class OrderService {
         for (SellerOrder so : order.getSellerOrders()) {
             recordHistory(order, so, null, OrderStatus.PENDING, user.id());
         }
-
-        cartItemRepository.deleteAll(cart.getItems());
-        cart.getItems().clear();
         auditService.log(user.id(), "ORDER_CREATED", "Order", order.getId().toString(), "total=" + total, httpRequest);
         return toResponse(order);
     }
@@ -163,6 +163,9 @@ public class OrderService {
         recordHistory(sellerOrder.getOrder(), sellerOrder, previous, newStatus, user.id());
         auditService.log(user.id(), "SELLER_ORDER_STATUS_CHANGED", "SellerOrder", sellerOrderId.toString(),
                 previous + " -> " + newStatus, httpRequest);
+        // Create notification for the buyer when seller order status changes
+        PurchaseOrder order = sellerOrder.getOrder();
+        notificationService.createOrderStatusNotification(order.getBuyer().getId(), order.getId(), newStatus.name());
         return toSellerResponse(sellerOrder);
     }
 
