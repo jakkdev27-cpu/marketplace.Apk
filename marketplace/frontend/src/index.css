@@ -1,27 +1,27 @@
 :root {
   color-scheme: light;
-  --bg: #f4f7fb;
-  --bg-elevated: rgba(255, 255, 255, 0.74);
+  --bg: #f9fafb;
+  --bg-elevated: rgba(255,255,255,0.85);
   --panel: #ffffff;
   --panel-strong: #ffffff;
   --panel-soft: #f6f7fb;
-  --line: rgba(15, 23, 42, 0.08);
-  --line-strong: rgba(15, 23, 42, 0.12);
+  --line: rgba(15,23,42,0.06);
+  --line-strong: rgba(15,23,42,0.1);
   --text: #111827;
-  --text-soft: #5b6472;
-  --text-muted: #7a8192;
-  --brand: #6d3ef5;
-  --brand-dark: #4f37d5;
-  --brand-soft: rgba(109, 62, 245, 0.12);
-  --brand-secondary: #1d4ed8;
-  --success: #16a34a;
+  --text-soft: #4b5563;
+  --text-muted: #6b7280;
+  --brand: #2563eb;
+  --brand-dark: #1d4ed8;
+  --brand-soft: rgba(37,99,235,0.1);
+  --brand-secondary: #64748b;
+  --success: #10b981;
   --warning: #f59e0b;
   --danger: #ef4444;
-  --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.08);
-  --shadow-card: 0 18px 35px rgba(15, 23, 42, 0.08);
-  --radius: 24px;
-  font-family: 'Inter', 'Segoe UI', sans-serif;
-  line-height: 1.5;
+  --shadow-soft: 0 4px 12px rgba(15,23,42,0.08);
+  --shadow-card: 0 6px 16px rgba(15,23,42,0.1);
+  --radius: 8px;
+  font-family: 'Inter', 'system-ui', sans-serif;
+  line-height: 1.6;
   font-weight: 400;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -31,25 +31,25 @@
 
 html[data-theme='dark'] {
   color-scheme: dark;
-  --bg: #0b1020;
-  --bg-elevated: rgba(12, 17, 29, 0.8);
-  --panel: #101827;
-  --panel-strong: #111827;
-  --panel-soft: #172033;
-  --line: rgba(148, 163, 184, 0.17);
-  --line-strong: rgba(148, 163, 184, 0.22);
-  --text: #edf2f7;
-  --text-soft: #c7d1de;
-  --text-muted: #8da0b9;
-  --brand: #8b5cf6;
-  --brand-dark: #7c3aed;
-  --brand-soft: rgba(139, 92, 246, 0.18);
-  --brand-secondary: #60a5fa;
-  --success: #4ade80;
+  --bg: #0f172a;
+  --bg-elevated: rgba(15,23,42,0.8);
+  --panel: #111827;
+  --panel-strong: #1f2937;
+  --panel-soft: #1e293b;
+  --line: rgba(148,163,184,0.15);
+  --line-strong: rgba(148,163,184,0.2);
+  --text: #f9fafb;
+  --text-soft: #e2e8f0;
+  --text-muted: #94a3b8;
+  --brand: #60a5fa;
+  --brand-dark: #3b82f6;
+  --brand-soft: rgba(96,165,250,0.15);
+  --brand-secondary: #94a3b8;
+  --success: #34d399;
   --warning: #fbbf24;
   --danger: #f87171;
-  --shadow-soft: 0 22px 45px rgba(2, 6, 23, 0.5);
-  --shadow-card: 0 22px 45px rgba(2, 6, 23, 0.45);
+  --shadow-soft: 0 4px 12px rgba(0,0,0,0.4);
+  --shadow-card: 0 6px 16px rgba(0,0,0,0.5);
 }
 
 * {
@@ -64,9 +64,9 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: radial-gradient(circle at top, rgba(109, 62, 245, 0.08), transparent 30%), var(--bg);
+  background: radial-gradient(circle at top, rgba(37,99,235,0.05), transparent 30%), var(--bg);
   color: var(--text);
-  font-family: 'Inter', 'Segoe UI', sans-serif;
+  font-family: 'Inter', 'system-ui', sans-serif;
 }
 
 img {
@@ -103,4 +103,3 @@ p {
 input::placeholder {
   color: var(--text-muted);
 }
-
